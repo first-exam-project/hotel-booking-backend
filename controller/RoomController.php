@@ -8,10 +8,22 @@ class RoomController extends Database
         $query = file_get_contents('./sql/getAllRooms.sql');
         $stmt = $this->db->query($query);
         $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+        foreach ($data as $d) {
+            if ($d->time_to_available <= date('Y-m-d H:i:s') && $d->vailable == 0 && $d->time_to_available != null) {
+                $query = "UPDATE rooms SET time_to_available = null,available = true WHERE id = :id";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(":id", $d->id);
+                try {
+                    $stmt->execute();
+                } catch (PDOException $e) {
+                    return $e->getMessage();
+                }
+            }
+        }
         return $data;
-        // $room = new RoomResponse($data);
-        // $data = $room->responseFormatForAll($room);
-        // return $data;
+    }
+    public function changeToDefaultValue()
+    {
     }
     public function store($request)
     {
@@ -29,6 +41,8 @@ class RoomController extends Database
                 $stmt->bindParam(':imageName', $imageName, PDO::PARAM_STR);
                 try {
                     if ($stmt->execute()) {
+                    } else {
+                        return "500 Internal Server Error";
                     }
                 } catch (PDOException $e) {
                     return $e->getMessage();
