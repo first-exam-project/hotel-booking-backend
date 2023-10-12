@@ -1,6 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE");
 $uri = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
 header("Content-Type: application/json");
@@ -23,7 +24,8 @@ switch ($method | $uri) {
         echo json_encode($booking->index(), JSON_PRETTY_PRINT);
         break;
     case ($method == 'POST' && $uri == '/api/admin/bookings');
-        echo json_encode($customerPerRoom->store($_POST), JSON_PRETTY_PRINT);
+        $requestBody = json_decode(file_get_contents('php://input'), true);
+        echo json_encode($customerPerRoom->store($requestBody), JSON_PRETTY_PRINT);
         break;
     case ($method == 'DELETE' && preg_match('/\/api\/admin\/bookings\/[1-9]/', $uri));
         echo json_encode($booking->destroy(basename($uri)), JSON_PRETTY_PRINT);
