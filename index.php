@@ -34,7 +34,8 @@ switch ($method | $uri) {
         echo json_encode($room->index(), JSON_PRETTY_PRINT);
         break;
     case ($method == 'POST' && $uri == '/api/client/bookings');
-        echo json_encode($booking->store($_POST), JSON_PRETTY_PRINT);
+        $requestBody = json_decode(file_get_contents('php://input'), true);
+        echo json_encode($booking->store($requestBody), JSON_PRETTY_PRINT);
         break;
     default:
         echo json_encode(
