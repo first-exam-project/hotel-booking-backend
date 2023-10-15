@@ -3,11 +3,23 @@ require_once("./Database.php");
 require_once("./response/RoomResponse.php");
 class RoomController extends Database
 {
-    public function index()
+    public function clientGetRooms()
+    {
+        $query = file_get_contents('./sql/getRoomsClient.sql');
+        $stmt = $this->db->query($query);
+        $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+        return $data;
+    }
+
+    public function getData()
     {
         $query = file_get_contents('./sql/getAllRooms.sql');
         $stmt = $this->db->query($query);
-        $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+        return  $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+    public function index()
+    {
+        $data  = $this->getData();
         foreach ($data as $d) {
             if ($d->time_to_available <= date('Y-m-d H:i:s') && $d->vailable == 0 && $d->time_to_available != null) {
                 $query = "UPDATE rooms SET time_to_available = null,available = true WHERE id = :id";
@@ -15,6 +27,8 @@ class RoomController extends Database
                 $stmt->bindParam(":id", $d->id);
                 try {
                     $stmt->execute();
+                    $data = $this->getData();
+                    return  $data;
                 } catch (PDOException $e) {
                     return $e->getMessage();
                 }
@@ -27,7 +41,7 @@ class RoomController extends Database
     }
     public function store($request)
     {
-        $imageName = basename($request["image"]["name"]);
+        $imageName = time() . "_" . basename($request["image"]["name"]);
         $imageDir = "public/images/";
         $numberOfRoom = $request['numberOfRoom'] ?? 1;
         $url = $imageDir . $imageName;

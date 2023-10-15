@@ -31,7 +31,7 @@ switch ($method | $uri) {
         echo json_encode($booking->destroy(basename($uri)), JSON_PRETTY_PRINT);
         break;
     case ($method == 'GET' && $uri == '/api/client/rooms');
-        echo json_encode($room->index(), JSON_PRETTY_PRINT);
+        echo json_encode($room->clientGetRooms(), JSON_PRETTY_PRINT);
         break;
     case ($method == 'POST' && $uri == '/api/client/bookings');
         $requestBody = json_decode(file_get_contents('php://input'), true);
