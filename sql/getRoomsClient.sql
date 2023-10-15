@@ -1,0 +1,1 @@
+SELECT * FROM rooms WHERE available = 1
